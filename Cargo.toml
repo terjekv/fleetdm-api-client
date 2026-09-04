@@ -37,7 +37,7 @@ url = "2.5"
 urlencoding = "2.1"
 fastrand = "2.3"
 httpdate = "1.0"
-base64 = "0.22"
+base64 = "0.23"
 strum = { version = "0.28", features = ["derive"] }
 tracing = { version = "0.1", optional = true }
 
