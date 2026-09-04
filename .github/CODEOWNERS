@@ -1,0 +1,5 @@
+/.github/ @terjekv
+/scripts/check-release.sh @terjekv
+/scripts/check-release-provenance.sh @terjekv
+/scripts/release-notes.sh @terjekv
+/scripts/test-release-provenance.sh @terjekv

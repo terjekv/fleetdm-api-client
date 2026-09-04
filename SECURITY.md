@@ -56,3 +56,15 @@ These protections have boundaries:
 
 Use least-privilege Fleet tokens, rotate credentials regularly, restrict log
 access, and prefer the curated typed endpoints where available.
+
+## Release security
+
+Crate releases use crates.io trusted publishing from the tag-only GitHub Actions
+workflow. The workflow requests a short-lived OIDC credential and does not use a
+stored crates.io token. Publication requires a strict version tag on the exact
+current `main` commit, matching release metadata, and the complete CI suite.
+
+Only the publication job can request an OIDC token, while GitHub release writes
+are isolated in a later job. External actions are pinned to immutable commit
+hashes and monitored by Dependabot. See [docs/releasing.md](docs/releasing.md)
+for the trusted-publisher binding and operational procedure.

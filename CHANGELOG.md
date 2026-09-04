@@ -28,6 +28,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   and a deterministic disposable Fleet preview suite.
 - CI checks for Rust 1.88 and stable, formatting, Clippy, tests, documentation,
   generated-code drift, and dependency advisories.
+- Cross-platform CI, CodeQL scanning, dependency license/source policy,
+  post-publication SemVer checks, Dependabot updates, and tag-driven crates.io
+  trusted publishing.
+- Guarded GitHub releases generated from the matching Keep a Changelog entry.
 
 ### Changed
 

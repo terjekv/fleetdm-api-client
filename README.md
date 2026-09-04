@@ -280,6 +280,7 @@ server error content in a sensitive environment.
 - [API route coverage](docs/missing_endpoints.md)
 - [Retry policies](docs/retry_policies.md)
 - [Live testing](docs/live-testing.md)
+- [Release process](docs/releasing.md)
 - [LDAP role synchronization example](docs/ldap-role-sync.md)
 - [Security policy and secure-use notes](SECURITY.md)
 - [Changelog](CHANGELOG.md)
@@ -296,6 +297,7 @@ cargo test --all-targets --locked
 cargo test --doc --locked
 scripts/update-spec-api.py --check
 cargo audit
+cargo deny check advisories bans licenses sources
 ```
 
 Run the disposable Fleet compatibility suite when Docker is available:

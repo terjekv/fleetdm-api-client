@@ -1,0 +1,141 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: always
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    name: Verify Release
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    outputs:
+      release_tag: ${{ steps.release.outputs.tag }}
+      release_version: ${{ steps.release.outputs.version }}
+    steps:
+      - name: Checkout all history
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Fetch protected main
+        run: git fetch --no-tags origin +refs/heads/main:refs/remotes/origin/main
+
+      - name: Verify release commit provenance
+        run: scripts/check-release-provenance.sh "$GITHUB_SHA" origin/main
+
+      - name: Install stable Rust
+        run: rustup toolchain install stable --profile minimal
+
+      - name: Resolve release metadata
+        id: release
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          scripts/check-release.sh "$RELEASE_TAG"
+          echo "tag=$RELEASE_TAG" >> "$GITHUB_OUTPUT"
+          echo "version=${RELEASE_TAG#v}" >> "$GITHUB_OUTPUT"
+
+      - name: List package contents
+        run: cargo +stable package --list --locked
+
+  required-checks:
+    name: Required Release Checks
+    needs: verify
+    permissions:
+      contents: read
+    uses: ./.github/workflows/ci.yml
+    with:
+      run_semver: true
+
+  publish:
+    name: Publish to crates.io
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    needs:
+      - verify
+      - required-checks
+    environment: release
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Install stable Rust
+        run: rustup toolchain install stable --profile minimal
+
+      - name: Check whether this version is already published
+        id: published
+        env:
+          RELEASE_VERSION: ${{ needs.verify.outputs.release_version }}
+        run: |
+          index_file="${RUNNER_TEMP}/fleetdm-api-client-index"
+          http_code="$(curl --silent --show-error --output "$index_file" --write-out '%{http_code}' \
+            'https://index.crates.io/fl/ee/fleetdm-api-client')"
+          case "$http_code" in
+            200)
+              if grep -Fq "\"vers\":\"${RELEASE_VERSION}\"" "$index_file"; then
+                echo "published=true" >> "$GITHUB_OUTPUT"
+              else
+                echo "published=false" >> "$GITHUB_OUTPUT"
+              fi
+              ;;
+            404) echo "published=false" >> "$GITHUB_OUTPUT" ;;
+            *) echo "unexpected crates.io index response: HTTP $http_code" >&2; exit 1 ;;
+          esac
+
+      - name: Authenticate to crates.io
+        if: steps.published.outputs.published != 'true'
+        id: auth
+        uses: rust-lang/crates-io-auth-action@c6f97d42243bad5fab37ca0427f495c86d5b1a18 # v1.0.5
+
+      - name: Publish crate
+        if: steps.published.outputs.published != 'true'
+        run: cargo +stable publish --locked
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ steps.auth.outputs.token }}
+
+      - name: Report existing publication
+        if: steps.published.outputs.published == 'true'
+        env:
+          RELEASE_VERSION: ${{ needs.verify.outputs.release_version }}
+        run: echo "fleetdm-api-client ${RELEASE_VERSION} is already published; continuing idempotently."
+
+  github-release:
+    name: Publish GitHub Release
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs:
+      - verify
+      - publish
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Create or update GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ needs.verify.outputs.release_tag }}
+        run: |
+          notes_file="${RUNNER_TEMP}/release-notes.md"
+          scripts/release-notes.sh "$RELEASE_TAG" > "$notes_file"
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            gh release edit "$RELEASE_TAG" --title "$RELEASE_TAG" --notes-file "$notes_file" --latest
+          else
+            gh release create "$RELEASE_TAG" --verify-tag --title "$RELEASE_TAG" --notes-file "$notes_file" --latest
+          fi

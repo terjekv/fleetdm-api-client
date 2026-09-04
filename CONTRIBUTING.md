@@ -50,6 +50,10 @@ scripts/update-spec-api.py --check
 
 Run `cargo audit` when dependencies or the lockfile change.
 
+Release preparation and tag publishing follow the guarded process in
+[docs/releasing.md](docs/releasing.md). Do not add a long-lived crates.io token
+to repository or environment secrets.
+
 ## Live compatibility tests
 
 The default live workflow creates a disposable local Fleet preview:

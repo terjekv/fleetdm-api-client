@@ -6,6 +6,7 @@
 - [Generated coverage checklist](endpoint_coverage_checklist.md)
 - [Retry policies](retry_policies.md)
 - [Live testing](live-testing.md)
+- [Release process](releasing.md)
 - [LDAP role synchronization](ldap-role-sync.md)
 - [Security policy and secure-use notes](../SECURITY.md)
 - [Contributing](../CONTRIBUTING.md)
