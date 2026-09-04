@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Rust ${{ matrix.toolchain }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        toolchain: ["1.88.0", stable]
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Install Rust toolchain
+        run: rustup toolchain install "${{ matrix.toolchain }}" --profile minimal
+      - name: Check all targets and features
+        run: cargo +${{ matrix.toolchain }} check --all-targets --all-features --locked
+      - name: Test all targets
+        run: cargo +${{ matrix.toolchain }} test --all-targets --locked
+      - name: Test documentation
+        run: cargo +${{ matrix.toolchain }} test --doc --locked
+
+  quality:
+    name: Formatting, lint, generation, and advisories
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Install Rust quality tools
+        run: rustup toolchain install stable --profile minimal --component clippy,rustfmt
+      - name: Check formatting
+        run: cargo +stable fmt --all -- --check
+      - name: Lint all targets and features
+        run: cargo +stable clippy --all-targets --all-features --locked -- -D warnings
+      - name: Check generated Fleet API
+        run: scripts/update-spec-api.py --check
+      - name: Install cargo-audit
+        run: cargo +stable install cargo-audit --locked
+      - name: Audit dependencies
+        run: cargo +stable audit

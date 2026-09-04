@@ -1,0 +1,30 @@
+mod common;
+mod fixture;
+
+// Endpoint-specific test modules
+mod activities;
+mod authentication;
+mod carves;
+mod certificates;
+mod commands;
+mod conditional_access;
+mod config;
+mod hosts;
+mod integrations;
+mod invitations;
+mod labels;
+mod os_settings;
+mod policies;
+mod premium;
+mod queries;
+mod scripts;
+mod sessions;
+mod setup_experience;
+mod software;
+mod targets;
+mod team_policies;
+mod teams;
+mod translator;
+mod users;
+mod version;
+mod vulnerabilities;

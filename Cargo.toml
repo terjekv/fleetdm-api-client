@@ -1,0 +1,64 @@
+[package]
+name = "fleetdm-api-client"
+version = "0.0.1"
+edition = "2024"
+rust-version = "1.88"
+description = "Async Rust client for the FleetDM REST API."
+license = "MIT"
+readme = "README.md"
+documentation = "https://docs.rs/fleetdm-api-client"
+homepage = "https://github.com/terjekv/fleetdm-api-client"
+repository = "https://github.com/terjekv/fleetdm-api-client"
+keywords = ["fleetdm", "api", "client", "mdm", "osquery"]
+categories = ["api-bindings", "web-programming::http-client"]
+include = [
+    "/src/**",
+    "/examples/**",
+    "/tests/**",
+    "/docs/**",
+    "/scripts/**",
+    "/AGENTS.md",
+    "/Cargo.lock",
+    "/CHANGELOG.md",
+    "/CONTRIBUTING.md",
+    "/LICENSE",
+    "/README.md",
+    "/SECURITY.md",
+]
+
+[dependencies]
+reqwest = { version = "0.13", default-features = false, features = ["brotli", "charset", "deflate", "gzip", "http2", "json", "multipart", "rustls", "zstd"] }
+tokio = { version = "1.42", features = ["time"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+chrono = { version = "0.4", features = ["serde"] }
+thiserror = "2.0"
+url = "2.5"
+urlencoding = "2.1"
+fastrand = "2.3"
+httpdate = "1.0"
+base64 = "0.22"
+strum = { version = "0.28", features = ["derive"] }
+tracing = { version = "0.1", optional = true }
+
+[features]
+default = []
+tracing = ["dep:tracing"]
+live-tests = []
+
+[[test]]
+name = "live"
+path = "tests/live.rs"
+required-features = ["live-tests"]
+
+[[example]]
+name = "live-fixture"
+path = "examples/live_fixture.rs"
+required-features = ["live-tests"]
+
+[dev-dependencies]
+wiremock = "0.6"
+tokio-test = "0.4"
+tokio = { version = "1.42", features = ["full"] }
+once_cell = "1.19"
+ldap3 = "0.12"
