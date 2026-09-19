@@ -24,9 +24,7 @@ workspace-default-features = "allow"
 external-default-features = "allow"
 allow = []
 deny = []
-skip = [
-    { crate = "windows-sys@0.60.2", reason = "transitive dev and platform dependencies have not converged on windows-sys 0.61" },
-]
+skip = []
 skip-tree = []
 
 [sources]
