@@ -978,6 +978,91 @@ async fn test_raw_api_supports_multipart() {
 }
 
 #[tokio::test]
+async fn test_raw_api_resets_policy_results_for_one_host() {
+    let mock_server = MockServer::start().await;
+    Mock::given(method("POST"))
+        .and(path("/api/v1/fleet/policies/123/reset"))
+        .and(query_param("host_id", "42"))
+        .and(header("authorization", "Bearer test-token"))
+        .respond_with(ResponseTemplate::new(200))
+        .expect(1)
+        .mount(&mock_server)
+        .await;
+
+    let client = FleetClient::builder(mock_server.uri())
+        .unwrap()
+        .with_token("test-token")
+        .unwrap()
+        .build();
+    let response = client
+        .raw_api()
+        .ep_post_api_v1_fleet_policies_by_policy_id_reset("123", Some(&[("host_id", "42")]), None)
+        .await
+        .unwrap();
+
+    assert_eq!(response.status(), reqwest::StatusCode::OK);
+    assert!(response.bytes().is_empty());
+}
+
+#[tokio::test]
+async fn test_raw_api_updates_a_hosts_custom_vital() {
+    let mock_server = MockServer::start().await;
+    Mock::given(method("PUT"))
+        .and(path("/api/v1/fleet/hosts/123/custom_host_vitals/7"))
+        .and(body_json(serde_json::json!({"value": "C02XL0Zerato"})))
+        .respond_with(ResponseTemplate::new(200))
+        .expect(1)
+        .mount(&mock_server)
+        .await;
+
+    let client = FleetClient::builder(mock_server.uri())
+        .unwrap()
+        .with_token("test-token")
+        .unwrap()
+        .build();
+    let body = ApiRequestBody::json(serde_json::json!({"value": "C02XL0Zerato"}));
+    let response = client
+        .raw_api()
+        .ep_put_api_v1_fleet_hosts_by_host_id_custom_host_vitals_by_id(
+            "123",
+            "7",
+            None,
+            Some(&body),
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(response.status(), reqwest::StatusCode::OK);
+}
+
+#[tokio::test]
+async fn test_raw_api_asset_lookup_encodes_the_id_and_preserves_not_found_errors() {
+    let mock_server = MockServer::start().await;
+    Mock::given(method("GET"))
+        .and(path("/api/v1/fleet/assets/missing%2Fasset%3Fname%3Dx"))
+        .respond_with(ResponseTemplate::new(404).set_body_json(serde_json::json!({
+            "message": "Asset not found",
+            "uuid": "asset-request-id"
+        })))
+        .expect(1)
+        .mount(&mock_server)
+        .await;
+
+    let client = FleetClient::builder(mock_server.uri())
+        .unwrap()
+        .with_token("test-token")
+        .unwrap()
+        .build();
+    let result = client
+        .raw_api()
+        .ep_get_api_v1_fleet_assets_by_asset_uuid("missing/asset?name=x", None)
+        .await;
+
+    assert!(matches!(result, Err(FleetError::NotFound(message))
+        if message.contains("Asset not found") && message.contains("asset-request-id")));
+}
+
+#[tokio::test]
 async fn test_retry_policy_retries_real_429_responses() {
     let mock_server = MockServer::start().await;
     let attempts = Arc::new(AtomicUsize::new(0));

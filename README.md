@@ -18,7 +18,7 @@ before `1.0`.
 - Remote Fleet servers require HTTPS; plain HTTP is accepted only on loopback.
 - The default HTTP client does not follow redirects with bearer credentials.
 - Curated endpoints return typed request, response, and domain models.
-- Generated `raw_api()` wrappers cover all 241 routes in the pinned Fleet spec.
+- Generated `raw_api()` wrappers cover all 266 routes in the pinned Fleet spec.
 - Query values and user-controlled path segments are percent-encoded centrally.
 - Inputs are validated before network I/O where the client can detect invalid
   state locally.

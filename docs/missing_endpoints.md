@@ -1,13 +1,13 @@
 # Fleet API Route Coverage
 
-Last updated: 2026-09-04
+Last updated: 2026-10-01
 Spec source: https://raw.githubusercontent.com/fleetdm/fleet/main/docs/REST%20API/rest-api.md
 Vendored reference: `docs/fleet-rest-api-main.md`
 
 ## Status
 
-- Spec routes (unique documented operations): `241`
-- Generated `FleetClient::raw_api()` route wrappers: `241`
+- Spec routes (unique documented operations): `266`
+- Generated `FleetClient::raw_api()` route wrappers: `266`
 - Routes missing a generated wrapper: `0`
 
 ## Notes
@@ -17,3 +17,5 @@ Vendored reference: `docs/fleet-rest-api-main.md`
 - This is syntactic route coverage, not a claim that each route's payload semantics have a curated typed model or live compatibility test.
 - Ergonomic typed endpoint modules cover commonly used workflows and intentionally do not mirror every documented route.
 - See [architecture](architecture.md) for the distinction between curated and generated APIs.
+- The 2026-10-01 refresh added 25 routes and removed none. See the
+  [coverage checklist](endpoint_coverage_checklist.md) for the route changes.
