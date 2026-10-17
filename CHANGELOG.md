@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Host-list options to populate labels and typed per-host policy results, without
+  fetching software. Label and policy update times remain optional.
 - Typed Host inventory accessors for OS build/platform family, hardware vendor,
   version and marketing name, logical CPU cores/subtype, public IP, primary/all-disk
   capacity, encryption state, Orbit/Desktop versions and detail freshness. Missing

@@ -213,6 +213,13 @@ pub struct Host {
     labels: Option<Vec<HostLabel>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
+    policies: Option<Vec<HostPolicy>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    policy_updated_at: Option<DateTime<Utc>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    label_updated_at: Option<DateTime<Utc>>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     issues: Option<HostIssues>,
 }
 
@@ -363,9 +370,59 @@ impl Host {
     pub fn labels(&self) -> Option<&[HostLabel]> {
         self.labels.as_deref()
     }
+    /// Per-host results requested with `populate_policies`.
+    pub fn policies(&self) -> Option<&[HostPolicy]> {
+        self.policies.as_deref()
+    }
+    /// Last time Fleet refreshed this host's policy results.
+    pub fn policy_updated_at(&self) -> Option<DateTime<Utc>> {
+        self.policy_updated_at
+    }
+    /// Last time Fleet refreshed this host's label membership.
+    pub fn label_updated_at(&self) -> Option<DateTime<Utc>> {
+        self.label_updated_at
+    }
     pub fn issues(&self) -> Option<&HostIssues> {
         self.issues.as_ref()
     }
+}
+
+/// A policy result attached to a host, rather than aggregate policy counts.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct HostPolicy {
+    id: u64,
+    name: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    response: Option<HostPolicyResponse>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    critical: Option<bool>,
+}
+
+impl HostPolicy {
+    pub fn id(&self) -> u64 {
+        self.id
+    }
+    pub fn name(&self) -> &str {
+        &self.name
+    }
+    /// `None` and `Unknown` both indicate no known pass/fail result.
+    pub fn response(&self) -> Option<HostPolicyResponse> {
+        self.response
+    }
+    pub fn critical(&self) -> Option<bool> {
+        self.critical
+    }
+}
+
+/// Fleet's documented per-host policy response values.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum HostPolicyResponse {
+    #[serde(rename = "pass")]
+    Pass,
+    #[serde(rename = "fail")]
+    Fail,
+    #[serde(rename = "")]
+    Unknown,
 }
 
 /// Label associated with a host
