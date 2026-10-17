@@ -135,6 +135,13 @@ attempt to automate an interactive MFA challenge.
 Typed endpoints are the preferred surface. They validate known invariants and
 decode Fleet responses into models with narrow accessors.
 
+Host list and detail responses expose hardware, OS, network, disk capacity,
+encryption and agent inventory through typed accessors. Newer or platform-specific
+fields are optional: `None` for `disk_encryption_enabled()` means unknown, not
+unencrypted. Disk capacities retain Fleet's gigabyte values, including fractions.
+Use `detail_updated_at()` to assess the age of cached device facts independently
+of `seen_time()`; fetching the API does not refresh either timestamp.
+
 ### Generated raw API
 
 Use `raw_api()` when Fleet documents a route that does not yet have a curated
