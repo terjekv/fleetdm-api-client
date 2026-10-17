@@ -1,14 +1,14 @@
 # Fleet API Coverage Checklist (Spec vs Client Code)
 
-Last updated: 2026-09-04
+Last updated: 2026-10-01
 Spec source: https://raw.githubusercontent.com/fleetdm/fleet/main/docs/REST%20API/rest-api.md
 Vendored reference: `docs/fleet-rest-api-main.md`
 Code scanned: `src/endpoints/raw_api.rs`
 
 ## Summary
 
-- Spec routes (unique documented operations): `241`
-- Generated `FleetClient::raw_api()` route wrappers: `241`
+- Spec routes (unique documented operations): `266`
+- Generated `FleetClient::raw_api()` route wrappers: `266`
 - Missing spec routes from generated transport coverage: `0`
 
 These counts measure route extraction and wrapper generation only. They do not establish request/response semantics or live Fleet-version compatibility.
@@ -17,11 +17,27 @@ These counts measure route extraction and wrapper generation only. They do not e
 
 - Refreshed the vendored Fleet REST API markdown from upstream `main`.
 - Regenerated `src/endpoints/raw_api.rs` from the refreshed route list.
-- Picked up the upstream route shift from team/query terminology to fleet/report terminology where present in the current docs.
-- Added byte-preserving transport coverage for newly documented routes such as
-  report endpoints, fleet endpoints, API-only user creation, REST API permission
-  listing, managed account password, recovery lock password, host certificate
-  resend, and software web apps.
+- Added 25 generated wrappers; all 241 previously recognized routes remain.
+- The additions below are relative to the 2026-09-04 snapshot. All paths share
+  the `/api/v1/fleet` prefix.
+
+| Area | Added operations |
+| --- | --- |
+| Apple asset declarations | `GET /assets`, `POST /assets`, `GET /assets/:asset_uuid`, `DELETE /assets/:asset_uuid` |
+| Custom host vitals | `GET /custom_host_vitals`, `POST /custom_host_vitals`, `PATCH /custom_host_vitals/:id`, `DELETE /custom_host_vitals/:id`, `PUT /hosts/:host_id/custom_host_vitals/:id`, `PUT /spec/custom_host_vitals` |
+| Policy automation | `GET /policies/:id/automation_activities`, `POST /policies/:policy_id/reset` |
+| Microsoft Graph credentials | `GET /microsoft_graph_credentials`, `PUT /microsoft_graph_credentials` |
+| Host management | `DELETE /hosts/:id/commands/:command_uuid`, `POST /hosts/:id/apns_ping`, `POST /hosts/:id/name_template/resend`, `POST /hosts/release_ab`, `POST /host_name_template` |
+| Live queries | `POST /queries/run`, `POST /queries/run_by_identifiers` |
+| Scripts | `GET /scripts/results/:execution_id` |
+| Configuration profiles | `PATCH /configuration_profiles/:profile_uuid` |
+| Self-service software | `POST /device/:token/software/install/:software_title_id` |
+| Android Enterprise | `DELETE /android_enterprise` |
+
+The upstream snapshot also changes documented fields and behavior on existing
+routes. This refresh updates the source documentation and generated transport;
+it does not establish full semantic parity for the curated typed endpoints or
+compatibility with every released Fleet version.
 
 ## Generated Route Surface
 

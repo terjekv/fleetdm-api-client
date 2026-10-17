@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Generated `raw_api()` wrappers for 25 newly documented Fleet routes, including
+  custom host vitals, Apple asset declarations, policy automation activities and
+  resets, Microsoft Graph credentials, and host management operations.
+
+### Changed
+
+- Refreshed the pinned Fleet REST API documentation on 2026-10-01. Generated
+  coverage now includes all 266 recognized routes; all 241 previous routes remain.
+- Updated 35 locked Cargo packages, including Tokio 1.53.3 and serde_json 1.0.154,
+  while retaining Rust 1.88 support.
+- Updated both CodeQL GitHub Actions to v4.39.0; all other pinned actions are
+  already at their latest stable releases as of 2026-10-16.
+
 ## [0.0.1] - 2026-09-04
 
 ### Added

@@ -26,7 +26,7 @@ A passing test may deliberately stop after verifying that Fleet reports an
 optional feature as unavailable. The default Community preview cannot exercise
 successful Premium, configured SSO, SMTP/SES, APNs, ABM/VPP, SCIM, or real-device
 MDM workflows. Generated raw route coverage is tested offline rather than by
-calling all 241 routes live.
+calling every documented route live.
 
 ## Prerequisites
 

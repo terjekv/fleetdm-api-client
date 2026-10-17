@@ -57,6 +57,34 @@ impl<'a> RawApiEndpoint<'a> {
         Ok(ApiResponse::from_parts(status, headers, bytes))
     }
 
+    /// `DELETE /api/v1/fleet/android_enterprise`
+    pub async fn ep_delete_api_v1_fleet_android_enterprise(
+        &self,
+        query: Option<ApiQuery<'_>>,
+        body: Option<&ApiRequestBody>,
+    ) -> Result<ApiResponse> {
+        self.send(
+            reqwest::Method::DELETE,
+            "/api/v1/fleet/android_enterprise",
+            query,
+            body,
+        )
+        .await
+    }
+
+    /// `DELETE /api/v1/fleet/assets/:asset_uuid`
+    pub async fn ep_delete_api_v1_fleet_assets_by_asset_uuid(
+        &self,
+        asset_uuid: impl AsRef<str>,
+        query: Option<ApiQuery<'_>>,
+        body: Option<&ApiRequestBody>,
+    ) -> Result<ApiResponse> {
+        let mut path = "/api/v1/fleet/assets/:asset_uuid".to_string();
+        let asset_uuid_encoded = encode_path_segment(asset_uuid.as_ref());
+        path = path.replace(":asset_uuid", &asset_uuid_encoded);
+        self.send(reqwest::Method::DELETE, &path, query, body).await
+    }
+
     /// `DELETE /api/v1/fleet/bootstrap/:fleet_id`
     pub async fn ep_delete_api_v1_fleet_bootstrap_by_fleet_id(
         &self,
@@ -121,6 +149,19 @@ impl<'a> RawApiEndpoint<'a> {
         let mut path = "/api/v1/fleet/configuration_profiles/:profile_uuid".to_string();
         let profile_uuid_encoded = encode_path_segment(profile_uuid.as_ref());
         path = path.replace(":profile_uuid", &profile_uuid_encoded);
+        self.send(reqwest::Method::DELETE, &path, query, body).await
+    }
+
+    /// `DELETE /api/v1/fleet/custom_host_vitals/:id`
+    pub async fn ep_delete_api_v1_fleet_custom_host_vitals_by_id(
+        &self,
+        id: impl AsRef<str>,
+        query: Option<ApiQuery<'_>>,
+        body: Option<&ApiRequestBody>,
+    ) -> Result<ApiResponse> {
+        let mut path = "/api/v1/fleet/custom_host_vitals/:id".to_string();
+        let id_encoded = encode_path_segment(id.as_ref());
+        path = path.replace(":id", &id_encoded);
         self.send(reqwest::Method::DELETE, &path, query, body).await
     }
 
@@ -191,6 +232,22 @@ impl<'a> RawApiEndpoint<'a> {
         path = path.replace(":id", &id_encoded);
         let activity_id_encoded = encode_path_segment(activity_id.as_ref());
         path = path.replace(":activity_id", &activity_id_encoded);
+        self.send(reqwest::Method::DELETE, &path, query, body).await
+    }
+
+    /// `DELETE /api/v1/fleet/hosts/:id/commands/:command_uuid`
+    pub async fn ep_delete_api_v1_fleet_hosts_by_id_commands_by_command_uuid(
+        &self,
+        id: impl AsRef<str>,
+        command_uuid: impl AsRef<str>,
+        query: Option<ApiQuery<'_>>,
+        body: Option<&ApiRequestBody>,
+    ) -> Result<ApiResponse> {
+        let mut path = "/api/v1/fleet/hosts/:id/commands/:command_uuid".to_string();
+        let id_encoded = encode_path_segment(id.as_ref());
+        path = path.replace(":id", &id_encoded);
+        let command_uuid_encoded = encode_path_segment(command_uuid.as_ref());
+        path = path.replace(":command_uuid", &command_uuid_encoded);
         self.send(reqwest::Method::DELETE, &path, query, body).await
     }
 
@@ -487,6 +544,27 @@ impl<'a> RawApiEndpoint<'a> {
             .await
     }
 
+    /// `GET /api/v1/fleet/assets`
+    pub async fn ep_get_api_v1_fleet_assets(
+        &self,
+        query: Option<ApiQuery<'_>>,
+    ) -> Result<ApiResponse> {
+        self.send(reqwest::Method::GET, "/api/v1/fleet/assets", query, None)
+            .await
+    }
+
+    /// `GET /api/v1/fleet/assets/:asset_uuid`
+    pub async fn ep_get_api_v1_fleet_assets_by_asset_uuid(
+        &self,
+        asset_uuid: impl AsRef<str>,
+        query: Option<ApiQuery<'_>>,
+    ) -> Result<ApiResponse> {
+        let mut path = "/api/v1/fleet/assets/:asset_uuid".to_string();
+        let asset_uuid_encoded = encode_path_segment(asset_uuid.as_ref());
+        path = path.replace(":asset_uuid", &asset_uuid_encoded);
+        self.send(reqwest::Method::GET, &path, query, None).await
+    }
+
     /// `GET /api/v1/fleet/bootstrap`
     pub async fn ep_get_api_v1_fleet_bootstrap(
         &self,
@@ -742,6 +820,20 @@ impl<'a> RawApiEndpoint<'a> {
         self.send(
             reqwest::Method::GET,
             "/api/v1/fleet/configuration_profiles/summary",
+            query,
+            None,
+        )
+        .await
+    }
+
+    /// `GET /api/v1/fleet/custom_host_vitals`
+    pub async fn ep_get_api_v1_fleet_custom_host_vitals(
+        &self,
+        query: Option<ApiQuery<'_>>,
+    ) -> Result<ApiResponse> {
+        self.send(
+            reqwest::Method::GET,
+            "/api/v1/fleet/custom_host_vitals",
             query,
             None,
         )
@@ -1309,6 +1401,20 @@ impl<'a> RawApiEndpoint<'a> {
             .await
     }
 
+    /// `GET /api/v1/fleet/microsoft_graph_credentials`
+    pub async fn ep_get_api_v1_fleet_microsoft_graph_credentials(
+        &self,
+        query: Option<ApiQuery<'_>>,
+    ) -> Result<ApiResponse> {
+        self.send(
+            reqwest::Method::GET,
+            "/api/v1/fleet/microsoft_graph_credentials",
+            query,
+            None,
+        )
+        .await
+    }
+
     /// `GET /api/v1/fleet/os_versions`
     pub async fn ep_get_api_v1_fleet_os_versions(
         &self,
@@ -1330,6 +1436,18 @@ impl<'a> RawApiEndpoint<'a> {
         query: Option<ApiQuery<'_>>,
     ) -> Result<ApiResponse> {
         let mut path = "/api/v1/fleet/os_versions/:id".to_string();
+        let id_encoded = encode_path_segment(id.as_ref());
+        path = path.replace(":id", &id_encoded);
+        self.send(reqwest::Method::GET, &path, query, None).await
+    }
+
+    /// `GET /api/v1/fleet/policies/:id/automation_activities`
+    pub async fn ep_get_api_v1_fleet_policies_by_id_automation_activities(
+        &self,
+        id: impl AsRef<str>,
+        query: Option<ApiQuery<'_>>,
+    ) -> Result<ApiResponse> {
+        let mut path = "/api/v1/fleet/policies/:id/automation_activities".to_string();
         let id_encoded = encode_path_segment(id.as_ref());
         path = path.replace(":id", &id_encoded);
         self.send(reqwest::Method::GET, &path, query, None).await
@@ -1555,6 +1673,18 @@ impl<'a> RawApiEndpoint<'a> {
         let mut path = "/api/v1/fleet/scripts/batch/:batch_execution_id/host_results".to_string();
         let batch_execution_id_encoded = encode_path_segment(batch_execution_id.as_ref());
         path = path.replace(":batch_execution_id", &batch_execution_id_encoded);
+        self.send(reqwest::Method::GET, &path, query, None).await
+    }
+
+    /// `GET /api/v1/fleet/scripts/results/:execution_id`
+    pub async fn ep_get_api_v1_fleet_scripts_results_by_execution_id(
+        &self,
+        execution_id: impl AsRef<str>,
+        query: Option<ApiQuery<'_>>,
+    ) -> Result<ApiResponse> {
+        let mut path = "/api/v1/fleet/scripts/results/:execution_id".to_string();
+        let execution_id_encoded = encode_path_segment(execution_id.as_ref());
+        path = path.replace(":execution_id", &execution_id_encoded);
         self.send(reqwest::Method::GET, &path, query, None).await
     }
 
@@ -1894,6 +2024,32 @@ impl<'a> RawApiEndpoint<'a> {
             .await
     }
 
+    /// `PATCH /api/v1/fleet/configuration_profiles/:profile_uuid`
+    pub async fn ep_patch_api_v1_fleet_configuration_profiles_by_profile_uuid(
+        &self,
+        profile_uuid: impl AsRef<str>,
+        query: Option<ApiQuery<'_>>,
+        body: Option<&ApiRequestBody>,
+    ) -> Result<ApiResponse> {
+        let mut path = "/api/v1/fleet/configuration_profiles/:profile_uuid".to_string();
+        let profile_uuid_encoded = encode_path_segment(profile_uuid.as_ref());
+        path = path.replace(":profile_uuid", &profile_uuid_encoded);
+        self.send(reqwest::Method::PATCH, &path, query, body).await
+    }
+
+    /// `PATCH /api/v1/fleet/custom_host_vitals/:id`
+    pub async fn ep_patch_api_v1_fleet_custom_host_vitals_by_id(
+        &self,
+        id: impl AsRef<str>,
+        query: Option<ApiQuery<'_>>,
+        body: Option<&ApiRequestBody>,
+    ) -> Result<ApiResponse> {
+        let mut path = "/api/v1/fleet/custom_host_vitals/:id".to_string();
+        let id_encoded = encode_path_segment(id.as_ref());
+        path = path.replace(":id", &id_encoded);
+        self.send(reqwest::Method::PATCH, &path, query, body).await
+    }
+
     /// `PATCH /api/v1/fleet/fleets/:fleet_id/policies/:policy_id`
     pub async fn ep_patch_api_v1_fleet_fleets_by_fleet_id_policies_by_policy_id(
         &self,
@@ -2107,6 +2263,16 @@ impl<'a> RawApiEndpoint<'a> {
         self.send(reqwest::Method::PATCH, &path, query, body).await
     }
 
+    /// `POST /api/v1/fleet/assets`
+    pub async fn ep_post_api_v1_fleet_assets(
+        &self,
+        query: Option<ApiQuery<'_>>,
+        body: Option<&ApiRequestBody>,
+    ) -> Result<ApiResponse> {
+        self.send(reqwest::Method::POST, "/api/v1/fleet/assets", query, body)
+            .await
+    }
+
     /// `POST /api/v1/fleet/automations/reset`
     pub async fn ep_post_api_v1_fleet_automations_reset(
         &self,
@@ -2255,6 +2421,21 @@ impl<'a> RawApiEndpoint<'a> {
         .await
     }
 
+    /// `POST /api/v1/fleet/custom_host_vitals`
+    pub async fn ep_post_api_v1_fleet_custom_host_vitals(
+        &self,
+        query: Option<ApiQuery<'_>>,
+        body: Option<&ApiRequestBody>,
+    ) -> Result<ApiResponse> {
+        self.send(
+            reqwest::Method::POST,
+            "/api/v1/fleet/custom_host_vitals",
+            query,
+            body,
+        )
+        .await
+    }
+
     /// `POST /api/v1/fleet/custom_variables`
     pub async fn ep_post_api_v1_fleet_custom_variables(
         &self,
@@ -2310,6 +2491,23 @@ impl<'a> RawApiEndpoint<'a> {
         let mut path = "/api/v1/fleet/device/:token/refetch".to_string();
         let token_encoded = encode_path_segment(token.as_ref());
         path = path.replace(":token", &token_encoded);
+        self.send(reqwest::Method::POST, &path, query, body).await
+    }
+
+    /// `POST /api/v1/fleet/device/:token/software/install/:software_title_id`
+    pub async fn ep_post_api_v1_fleet_device_by_token_software_install_by_software_title_id(
+        &self,
+        token: impl AsRef<str>,
+        software_title_id: impl AsRef<str>,
+        query: Option<ApiQuery<'_>>,
+        body: Option<&ApiRequestBody>,
+    ) -> Result<ApiResponse> {
+        let mut path =
+            "/api/v1/fleet/device/:token/software/install/:software_title_id".to_string();
+        let token_encoded = encode_path_segment(token.as_ref());
+        path = path.replace(":token", &token_encoded);
+        let software_title_id_encoded = encode_path_segment(software_title_id.as_ref());
+        path = path.replace(":software_title_id", &software_title_id_encoded);
         self.send(reqwest::Method::POST, &path, query, body).await
     }
 
@@ -2437,6 +2635,34 @@ impl<'a> RawApiEndpoint<'a> {
         .await
     }
 
+    /// `POST /api/v1/fleet/host_name_template`
+    pub async fn ep_post_api_v1_fleet_host_name_template(
+        &self,
+        query: Option<ApiQuery<'_>>,
+        body: Option<&ApiRequestBody>,
+    ) -> Result<ApiResponse> {
+        self.send(
+            reqwest::Method::POST,
+            "/api/v1/fleet/host_name_template",
+            query,
+            body,
+        )
+        .await
+    }
+
+    /// `POST /api/v1/fleet/hosts/:id/apns_ping`
+    pub async fn ep_post_api_v1_fleet_hosts_by_id_apns_ping(
+        &self,
+        id: impl AsRef<str>,
+        query: Option<ApiQuery<'_>>,
+        body: Option<&ApiRequestBody>,
+    ) -> Result<ApiResponse> {
+        let mut path = "/api/v1/fleet/hosts/:id/apns_ping".to_string();
+        let id_encoded = encode_path_segment(id.as_ref());
+        path = path.replace(":id", &id_encoded);
+        self.send(reqwest::Method::POST, &path, query, body).await
+    }
+
     /// `POST /api/v1/fleet/hosts/:id/certificates/:certificate_template_id/resend`
     pub async fn ep_post_api_v1_fleet_hosts_by_id_certificates_by_certificate_template_id_resend(
         &self,
@@ -2518,6 +2744,19 @@ impl<'a> RawApiEndpoint<'a> {
         body: Option<&ApiRequestBody>,
     ) -> Result<ApiResponse> {
         let mut path = "/api/v1/fleet/hosts/:id/managed_account_password/rotate".to_string();
+        let id_encoded = encode_path_segment(id.as_ref());
+        path = path.replace(":id", &id_encoded);
+        self.send(reqwest::Method::POST, &path, query, body).await
+    }
+
+    /// `POST /api/v1/fleet/hosts/:id/name_template/resend`
+    pub async fn ep_post_api_v1_fleet_hosts_by_id_name_template_resend(
+        &self,
+        id: impl AsRef<str>,
+        query: Option<ApiQuery<'_>>,
+        body: Option<&ApiRequestBody>,
+    ) -> Result<ApiResponse> {
+        let mut path = "/api/v1/fleet/hosts/:id/name_template/resend".to_string();
         let id_encoded = encode_path_segment(id.as_ref());
         path = path.replace(":id", &id_encoded);
         self.send(reqwest::Method::POST, &path, query, body).await
@@ -2648,6 +2887,21 @@ impl<'a> RawApiEndpoint<'a> {
         self.send(reqwest::Method::POST, &path, query, body).await
     }
 
+    /// `POST /api/v1/fleet/hosts/release_ab`
+    pub async fn ep_post_api_v1_fleet_hosts_release_ab(
+        &self,
+        query: Option<ApiQuery<'_>>,
+        body: Option<&ApiRequestBody>,
+    ) -> Result<ApiResponse> {
+        self.send(
+            reqwest::Method::POST,
+            "/api/v1/fleet/hosts/release_ab",
+            query,
+            body,
+        )
+        .await
+    }
+
     /// `POST /api/v1/fleet/hosts/transfer`
     pub async fn ep_post_api_v1_fleet_hosts_transfer(
         &self,
@@ -2742,6 +2996,49 @@ impl<'a> RawApiEndpoint<'a> {
         self.send(
             reqwest::Method::POST,
             "/api/v1/fleet/perform_required_password_reset",
+            query,
+            body,
+        )
+        .await
+    }
+
+    /// `POST /api/v1/fleet/policies/:policy_id/reset`
+    pub async fn ep_post_api_v1_fleet_policies_by_policy_id_reset(
+        &self,
+        policy_id: impl AsRef<str>,
+        query: Option<ApiQuery<'_>>,
+        body: Option<&ApiRequestBody>,
+    ) -> Result<ApiResponse> {
+        let mut path = "/api/v1/fleet/policies/:policy_id/reset".to_string();
+        let policy_id_encoded = encode_path_segment(policy_id.as_ref());
+        path = path.replace(":policy_id", &policy_id_encoded);
+        self.send(reqwest::Method::POST, &path, query, body).await
+    }
+
+    /// `POST /api/v1/fleet/queries/run`
+    pub async fn ep_post_api_v1_fleet_queries_run(
+        &self,
+        query: Option<ApiQuery<'_>>,
+        body: Option<&ApiRequestBody>,
+    ) -> Result<ApiResponse> {
+        self.send(
+            reqwest::Method::POST,
+            "/api/v1/fleet/queries/run",
+            query,
+            body,
+        )
+        .await
+    }
+
+    /// `POST /api/v1/fleet/queries/run_by_identifiers`
+    pub async fn ep_post_api_v1_fleet_queries_run_by_identifiers(
+        &self,
+        query: Option<ApiQuery<'_>>,
+        body: Option<&ApiRequestBody>,
+    ) -> Result<ApiResponse> {
+        self.send(
+            reqwest::Method::POST,
+            "/api/v1/fleet/queries/run_by_identifiers",
             query,
             body,
         )
@@ -3107,6 +3404,22 @@ impl<'a> RawApiEndpoint<'a> {
         .await
     }
 
+    /// `PUT /api/v1/fleet/hosts/:host_id/custom_host_vitals/:id`
+    pub async fn ep_put_api_v1_fleet_hosts_by_host_id_custom_host_vitals_by_id(
+        &self,
+        host_id: impl AsRef<str>,
+        id: impl AsRef<str>,
+        query: Option<ApiQuery<'_>>,
+        body: Option<&ApiRequestBody>,
+    ) -> Result<ApiResponse> {
+        let mut path = "/api/v1/fleet/hosts/:host_id/custom_host_vitals/:id".to_string();
+        let host_id_encoded = encode_path_segment(host_id.as_ref());
+        path = path.replace(":host_id", &host_id_encoded);
+        let id_encoded = encode_path_segment(id.as_ref());
+        path = path.replace(":id", &id_encoded);
+        self.send(reqwest::Method::PUT, &path, query, body).await
+    }
+
     /// `PUT /api/v1/fleet/hosts/:id/device_mapping`
     pub async fn ep_put_api_v1_fleet_hosts_by_id_device_mapping(
         &self,
@@ -3128,6 +3441,21 @@ impl<'a> RawApiEndpoint<'a> {
     ) -> Result<ApiResponse> {
         self.send(reqwest::Method::PUT, "/api/v1/fleet/logo", query, body)
             .await
+    }
+
+    /// `PUT /api/v1/fleet/microsoft_graph_credentials`
+    pub async fn ep_put_api_v1_fleet_microsoft_graph_credentials(
+        &self,
+        query: Option<ApiQuery<'_>>,
+        body: Option<&ApiRequestBody>,
+    ) -> Result<ApiResponse> {
+        self.send(
+            reqwest::Method::PUT,
+            "/api/v1/fleet/microsoft_graph_credentials",
+            query,
+            body,
+        )
+        .await
     }
 
     /// `PUT /api/v1/fleet/scim/Groups/:id`
@@ -3182,5 +3510,20 @@ impl<'a> RawApiEndpoint<'a> {
         let id_encoded = encode_path_segment(id.as_ref());
         path = path.replace(":id", &id_encoded);
         self.send(reqwest::Method::PUT, &path, query, body).await
+    }
+
+    /// `PUT /api/v1/fleet/spec/custom_host_vitals`
+    pub async fn ep_put_api_v1_fleet_spec_custom_host_vitals(
+        &self,
+        query: Option<ApiQuery<'_>>,
+        body: Option<&ApiRequestBody>,
+    ) -> Result<ApiResponse> {
+        self.send(
+            reqwest::Method::PUT,
+            "/api/v1/fleet/spec/custom_host_vitals",
+            query,
+            body,
+        )
+        .await
     }
 }
