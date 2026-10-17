@@ -135,6 +135,11 @@ attempt to automate an interactive MFA challenge.
 Typed endpoints are the preferred surface. They validate known invariants and
 decode Fleet responses into models with narrow accessors.
 
+Host list requests can opt into `.populate_labels(true)` and
+`.populate_policies(true)` to include cached labels and typed per-host policy
+results. Policy responses distinguish pass, fail and unknown; label/policy update
+times remain optional. These options do not request software inventory.
+
 Host list and detail responses expose hardware, OS, network, disk capacity,
 encryption and agent inventory through typed accessors. Newer or platform-specific
 fields are optional: `None` for `disk_encryption_enabled()` means unknown, not

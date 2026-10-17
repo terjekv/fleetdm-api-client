@@ -39,6 +39,8 @@ impl HostsEndpoint {
         ListHostsBuilder {
             client: &self.client,
             query: ListHostsQuery::new(),
+            populate_labels: None,
+            populate_policies: None,
         }
     }
 
@@ -227,6 +229,8 @@ impl HostsEndpoint {
 pub struct ListHostsBuilder<'a> {
     client: &'a FleetClient,
     query: ListHostsQuery,
+    populate_labels: Option<bool>,
+    populate_policies: Option<bool>,
 }
 
 impl<'a> ListHostsBuilder<'a> {
@@ -285,10 +289,28 @@ impl<'a> ListHostsBuilder<'a> {
         self
     }
 
-    /// Execute the list hosts query
+    /// Include label membership in each host returned by `GET /api/v1/fleet/hosts`.
+    pub fn populate_labels(mut self, populate: bool) -> Self {
+        self.populate_labels = Some(populate);
+        self
+    }
+
+    /// Include per-host policy results without requesting installed software.
+    pub fn populate_policies(mut self, populate: bool) -> Self {
+        self.populate_policies = Some(populate);
+        self
+    }
+
+    /// Execute the list hosts query.
     pub async fn send(self) -> Result<ListHostsResponse> {
         self.query.validate()?;
-        let params = self.query.to_query_params();
+        let mut params = self.query.to_query_params();
+        if let Some(populate) = self.populate_labels {
+            params.push(("populate_labels".into(), populate.to_string()));
+        }
+        if let Some(populate) = self.populate_policies {
+            params.push(("populate_policies".into(), populate.to_string()));
+        }
         let path = crate::http::append_query_params(crate::paths::HOSTS, &params);
 
         let request = self.client.request(reqwest::Method::GET, &path)?;

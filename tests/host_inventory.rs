@@ -1,4 +1,7 @@
-use fleetdm_api_client::{FleetClient, models::host::Host};
+use fleetdm_api_client::{
+    FleetClient,
+    models::host::{Host, HostPolicyResponse},
+};
 use serde_json::{Value, json};
 use wiremock::{
     Mock, MockServer, ResponseTemplate,
@@ -128,4 +131,99 @@ fn malformed_inventory_types_are_rejected() {
             "accepted invalid {field}"
         );
     }
+}
+
+#[tokio::test]
+async fn host_observation_options_are_explicit_and_do_not_request_software() {
+    let server = MockServer::start().await;
+    let client = FleetClient::builder(server.uri())
+        .unwrap()
+        .with_token("test-token")
+        .unwrap()
+        .build();
+    let mut payload = host_json();
+    payload["labels"] =
+        json!([{"id":7,"name":"Workstations","description":"","label_type":"regular"}]);
+    payload["policies"] =
+        json!([{"id":5,"name":"Disk encrypted","response":"fail","critical":false}]);
+    payload["policy_updated_at"] = json!("2025-02-01T00:00:00Z");
+    payload["label_updated_at"] = json!("2025-02-01T00:00:00Z");
+    Mock::given(method("GET"))
+        .and(path("/api/v1/fleet/hosts"))
+        .respond_with(ResponseTemplate::new(200).set_body_json(json!({"hosts":[payload]})))
+        .expect(3)
+        .mount(&server)
+        .await;
+    client.hosts().list().send().await.unwrap();
+    let list = client
+        .hosts()
+        .list()
+        .populate_labels(true)
+        .populate_policies(true)
+        .send()
+        .await
+        .unwrap();
+    client
+        .hosts()
+        .list()
+        .populate_labels(false)
+        .populate_policies(false)
+        .send()
+        .await
+        .unwrap();
+    let requests = server.received_requests().await.unwrap();
+    for (request, expected) in requests.iter().zip([None, Some("true"), Some("false")]) {
+        let params: std::collections::BTreeMap<_, _> = request.url.query_pairs().collect();
+        assert_eq!(params.get("populate_labels").map(|v| v.as_ref()), expected);
+        assert_eq!(
+            params.get("populate_policies").map(|v| v.as_ref()),
+            expected
+        );
+        assert!(!params.contains_key("populate_software"));
+    }
+    let host = &list.hosts()[0];
+    let policy = &host.policies().unwrap()[0];
+    assert_eq!(policy.id(), 5);
+    assert_eq!(policy.name(), "Disk encrypted");
+    assert_eq!(policy.response(), Some(HostPolicyResponse::Fail));
+    assert_eq!(policy.critical(), Some(false));
+    assert_eq!(host.labels().unwrap()[0].name(), "Workstations");
+    assert_eq!(host.policy_updated_at(), host.label_updated_at());
+    assert!(host.policy_updated_at().is_some());
+}
+
+#[test]
+fn policy_results_and_unknown_observations_roundtrip() {
+    for (wire, expected) in [
+        (json!("pass"), Some(HostPolicyResponse::Pass)),
+        (json!("fail"), Some(HostPolicyResponse::Fail)),
+        (json!(""), Some(HostPolicyResponse::Unknown)),
+        (Value::Null, None),
+    ] {
+        let mut payload = host_json();
+        payload["policies"] = json!([{"id":5,"name":"Example","response":wire}]);
+        let host: Host = serde_json::from_value(payload).unwrap();
+        assert_eq!(host.policies().unwrap()[0].response(), expected);
+        let roundtrip = serde_json::to_value(host).unwrap();
+        assert_eq!(roundtrip["policies"][0]["response"], wire);
+    }
+    for explicit_null in [false, true] {
+        let mut payload = host_json();
+        if explicit_null {
+            for key in ["policies", "policy_updated_at", "label_updated_at"] {
+                payload[key] = Value::Null;
+            }
+        }
+        let host: Host = serde_json::from_value(payload).unwrap();
+        assert!(host.policies().is_none());
+        assert!(host.policy_updated_at().is_none());
+        assert!(host.label_updated_at().is_none());
+    }
+    let mut payload = host_json();
+    payload["policies"] = json!([{"id":5,"name":"Example"}]);
+    let host: Host = serde_json::from_value(payload.clone()).unwrap();
+    assert_eq!(host.policies().unwrap()[0].response(), None);
+    assert_eq!(host.policies().unwrap()[0].critical(), None);
+    payload["policies"][0]["response"] = json!("invalid");
+    assert!(serde_json::from_value::<Host>(payload).is_err());
 }
