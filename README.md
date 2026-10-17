@@ -46,7 +46,7 @@ in Rust code:
 
 ```toml
 [dependencies]
-fleetdm-api-client = "0.0.1"
+fleetdm-api-client = "0.0.2"
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 ```
 

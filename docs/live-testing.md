@@ -47,10 +47,12 @@ scripts/live-test.sh
 
 The script:
 
-1. resolves the latest released `fleetctl`;
+1. resolves the requested Fleet release (or the latest release by default) and
+   selects its matching `fleetctl`;
 2. downloads its archive and published checksum;
 3. verifies the archive before execution;
-4. starts `fleetctl preview` on loopback;
+4. starts `fleetctl preview` on loopback with the server image and preview
+   configuration pinned to that release;
 5. authenticates through this Rust client;
 6. seeds deterministic fixtures and records their exact IDs in a temporary
    manifest;
@@ -84,6 +86,11 @@ scripts/live-test.sh --license-key="your-test-license"
 The full suite defaults to one test thread because tests share and mutate server
 state. Increase `--test-threads` only after verifying the selected tests are
 independent.
+
+Released version tags accept `v4.87.0`, `4.87.0`, or `fleet-v4.87.0`.
+Non-release tags such as `main` use the latest released `fleetctl` and the preview
+configuration from `main`; compatibility with unreleased server changes is not
+guaranteed.
 
 ## External Fleet servers
 
