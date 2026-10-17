@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Typed Host inventory accessors for OS build/platform family, hardware vendor,
+  version and marketing name, logical CPU cores/subtype, public IP, primary/all-disk
+  capacity, encryption state, Orbit/Desktop versions and detail freshness. Missing
+  and null fields remain optional for compatibility with older Fleet responses.
 - Generated `raw_api()` wrappers for 25 newly documented Fleet routes, including
   custom host vitals, Apple asset declarations, policy automation activities and
   resets, Microsoft Graph credentials, and host management operations.

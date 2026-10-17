@@ -141,6 +141,10 @@ pub struct Host {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     os_version: Option<OsVersion>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    build: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    platform_like: Option<String>,
 
     status: HostStatus,
     uptime: u64,
@@ -152,19 +156,43 @@ pub struct Host {
     cpu_brand: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     cpu_physical_cores: Option<u32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    cpu_logical_cores: Option<u32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    cpu_subtype: Option<String>,
 
     primary_ip: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     primary_mac: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    public_ip: Option<String>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     hardware_model: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     hardware_serial: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    hardware_vendor: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    hardware_version: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    hardware_marketing_name: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    gigs_total_disk_space: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    gigs_all_disk_space: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    disk_encryption_enabled: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    orbit_version: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    fleet_desktop_version: Option<String>,
 
     seen_time: DateTime<Utc>,
     created_at: DateTime<Utc>,
     updated_at: DateTime<Utc>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    detail_updated_at: Option<DateTime<Utc>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     last_enrolled_at: Option<DateTime<Utc>>,
@@ -213,6 +241,14 @@ impl Host {
     pub fn os_version(&self) -> Option<&OsVersion> {
         self.os_version.as_ref()
     }
+    /// Operating system build reported separately from `os_version`.
+    pub fn build(&self) -> Option<&str> {
+        self.build.as_deref()
+    }
+    /// Fleet's platform compatibility family, as reported by the host.
+    pub fn platform_like(&self) -> Option<&str> {
+        self.platform_like.as_deref()
+    }
     pub fn status(&self) -> HostStatus {
         self.status
     }
@@ -231,17 +267,65 @@ impl Host {
     pub fn cpu_physical_cores(&self) -> Option<u32> {
         self.cpu_physical_cores
     }
+    /// Number of logical CPU cores reported by Fleet.
+    pub fn cpu_logical_cores(&self) -> Option<u32> {
+        self.cpu_logical_cores
+    }
+    /// CPU subtype reported by the operating system.
+    pub fn cpu_subtype(&self) -> Option<&str> {
+        self.cpu_subtype.as_deref()
+    }
     pub fn primary_ip(&self) -> &str {
         &self.primary_ip
     }
     pub fn primary_mac(&self) -> Option<&str> {
         self.primary_mac.as_deref()
     }
+    /// Public IP observed by Fleet, distinct from the host's primary IP.
+    pub fn public_ip(&self) -> Option<&str> {
+        self.public_ip.as_deref()
+    }
     pub fn hardware_model(&self) -> Option<&str> {
         self.hardware_model.as_deref()
     }
     pub fn hardware_serial(&self) -> Option<&str> {
         self.hardware_serial.as_deref()
+    }
+    /// Hardware vendor reported by the device.
+    pub fn hardware_vendor(&self) -> Option<&str> {
+        self.hardware_vendor.as_deref()
+    }
+    /// Hardware version reported by the device.
+    pub fn hardware_version(&self) -> Option<&str> {
+        self.hardware_version.as_deref()
+    }
+    /// Human-readable hardware model name, when available.
+    pub fn hardware_marketing_name(&self) -> Option<&str> {
+        self.hardware_marketing_name.as_deref()
+    }
+    /// Fleet's reported capacity for the primary disk, in gigabytes.
+    ///
+    /// Missing or null values remain `None`; fractional and zero values are retained.
+    pub fn gigs_total_disk_space(&self) -> Option<f64> {
+        self.gigs_total_disk_space
+    }
+    /// Fleet's reported capacity across all disks, in gigabytes, when available.
+    pub fn gigs_all_disk_space(&self) -> Option<f64> {
+        self.gigs_all_disk_space
+    }
+    /// Disk encryption state, or `None` when Fleet omits it or reports null.
+    ///
+    /// An unknown state must not be interpreted as unencrypted.
+    pub fn disk_encryption_enabled(&self) -> Option<bool> {
+        self.disk_encryption_enabled
+    }
+    /// Version of the Orbit component of fleetd, when reported.
+    pub fn orbit_version(&self) -> Option<&str> {
+        self.orbit_version.as_deref()
+    }
+    /// Version of Fleet Desktop, when installed and reported.
+    pub fn fleet_desktop_version(&self) -> Option<&str> {
+        self.fleet_desktop_version.as_deref()
     }
     pub fn seen_time(&self) -> DateTime<Utc> {
         self.seen_time
@@ -251,6 +335,12 @@ impl Host {
     }
     pub fn updated_at(&self) -> DateTime<Utc> {
         self.updated_at
+    }
+    /// Last time Fleet refreshed host details, independently of `seen_time`.
+    ///
+    /// Reading the API does not refresh this timestamp or the cached device facts.
+    pub fn detail_updated_at(&self) -> Option<DateTime<Utc>> {
+        self.detail_updated_at
     }
     pub fn last_enrolled_at(&self) -> Option<DateTime<Utc>> {
         self.last_enrolled_at
