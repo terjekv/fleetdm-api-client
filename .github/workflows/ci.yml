@@ -54,6 +54,9 @@ jobs:
       - name: Test release provenance guard
         run: scripts/test-release-provenance.sh
 
+      - name: Test live preview version selection
+        run: bash scripts/test-live-test.sh
+
   test:
     name: Tests (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
