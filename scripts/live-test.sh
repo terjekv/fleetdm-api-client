@@ -72,17 +72,25 @@ latest_release_tag() {
 set_release_metadata_from_tag() {
   local raw_tag=${1:-}
 
-  if [[ -n "$raw_tag" && ! "$raw_tag" =~ ^(fleet-)?v?[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-    warn "Preview tag '$raw_tag' is not a released Fleet version. Using the latest released fleetctl."
+  if [[ "$raw_tag" =~ ^(fleet-)?v?([0-9]+\.[0-9]+\.[0-9]+)$ ]]; then
+    FLEETCTL_RELEASE_TAG="fleet-v${BASH_REMATCH[2]}"
+  else
+    if [[ -n "$raw_tag" && "$raw_tag" != "latest" ]]; then
+      warn "Preview tag '$raw_tag' is not a released Fleet version. Using the latest released fleetctl."
+    fi
+    FLEETCTL_RELEASE_TAG=$(latest_release_tag)
   fi
 
-  FLEETCTL_RELEASE_TAG=$(latest_release_tag)
   if [[ "$FLEETCTL_RELEASE_TAG" =~ ^fleet-(v[0-9]+\.[0-9]+\.[0-9]+)$ ]]; then
     FLEETCTL_ASSET_VERSION=${BASH_REMATCH[1]}
+    if [[ -z "$raw_tag" || "$raw_tag" == "latest" || "$raw_tag" =~ ^(fleet-)?v?[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+      FLEET_PREVIEW_TAG="$FLEETCTL_ASSET_VERSION"
+      FLEET_PREVIEW_CONFIG_REF="$FLEETCTL_RELEASE_TAG"
+    fi
     return
   fi
 
-  err "Unable to parse latest Fleet release tag: $FLEETCTL_RELEASE_TAG"
+  err "Unable to parse Fleet release tag: $FLEETCTL_RELEASE_TAG"
   exit 1
 }
 
@@ -174,6 +182,7 @@ FLEETCTL_BIN=""
 FLEETCTL_RELEASE_TAG=""
 FLEETCTL_ASSET_VERSION=""
 FLEETCTL_ASSET_NAME=""
+FLEET_PREVIEW_CONFIG_REF="main"
 FLEET_FIXTURE_FILE=""
 FLEET_TOKEN_FILE=""
 FIXTURE_SEEDED=0
@@ -287,7 +296,7 @@ if [[ $EXTERNAL -eq 0 ]]; then
     "$FLEETCTL_BIN" preview reset >/dev/null 2>&1 || true
   fi
 
-  preview_cmd=("$FLEETCTL_BIN" preview)
+  preview_cmd=("$FLEETCTL_BIN" preview --preview-config "$FLEET_PREVIEW_CONFIG_REF")
   if [[ -n "$FLEET_PREVIEW_LICENSE_KEY" ]]; then
     preview_cmd+=(--license-key "$FLEET_PREVIEW_LICENSE_KEY")
   fi

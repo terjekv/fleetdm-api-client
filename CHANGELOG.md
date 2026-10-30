@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.2] - 2026-10-30
+
 ### Added
 
 - Host-list options to populate labels and typed per-host policy results, without
@@ -23,10 +25,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Refreshed the pinned Fleet REST API documentation on 2026-10-01. Generated
   coverage now includes all 266 recognized routes; all 241 previous routes remain.
-- Updated 35 locked Cargo packages, including Tokio 1.53.3 and serde_json 1.0.154,
-  while retaining Rust 1.88 support.
-- Updated both CodeQL GitHub Actions to v4.39.0; all other pinned actions are
-  already at their latest stable releases as of 2026-10-16.
+- Refreshed locked Cargo dependencies through 2026-10-30, including Tokio 1.54.1
+  and serde_json 1.0.154, while retaining Rust 1.88 support.
+- Updated pinned GitHub Actions, including CodeQL v4.39.1 and crates.io
+  authentication v1.0.6.
+
+### Fixed
+
+- Pin disposable Fleet previews to matching fleetctl releases and preview
+  configuration, avoiding setup failures when testing older Fleet versions.
 
 ## [0.0.1] - 2026-09-04
 
@@ -91,5 +98,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Removed the tracked local environment file and retired the unused Docker
   Compose setup; disposable live tests now use Fleet Preview exclusively.
 
-[Unreleased]: https://github.com/terjekv/fleetdm-api-client/compare/v0.0.1...HEAD
+[Unreleased]: https://github.com/terjekv/fleetdm-api-client/compare/v0.0.2...HEAD
+[0.0.2]: https://github.com/terjekv/fleetdm-api-client/compare/v0.0.1...v0.0.2
 [0.0.1]: https://github.com/terjekv/fleetdm-api-client/releases/tag/v0.0.1
