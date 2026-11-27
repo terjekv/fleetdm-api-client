@@ -15,6 +15,10 @@ allow = [
     "Zlib",
 ]
 confidence-threshold = 0.8
+exceptions = [
+    # The bundled legacy decoders carry BSD-2-Clause, now declared in the crate metadata.
+    { crate = "zstd-sys@=2.2.0", allow = ["BSD-2-Clause"] },
+]
 
 [bans]
 multiple-versions = "warn"
