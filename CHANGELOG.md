@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.3] - 2026-11-27
+
+### Changed
+
+- Updated 38 locked Rust dependencies, including `url` 2.5.9, and raised the
+  Tokio dependency requirement to 1.54. The minimum supported Rust version is 1.88.
+- Updated the CI checks to CodeQL v4.39.5, cargo-deny-action v2.1.5, and
+  cargo-audit 0.23.0.
+
+### Compatibility
+
+- All 116 live tests passed on each of Fleet Community 4.94.1, 4.95.0, and 4.96.0.
+  The smoke suite also passed on the Fleet 4.87.0 baseline.
+
 ## [0.0.2] - 2026-10-30
 
 ### Added
@@ -98,6 +112,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Removed the tracked local environment file and retired the unused Docker
   Compose setup; disposable live tests now use Fleet Preview exclusively.
 
-[Unreleased]: https://github.com/terjekv/fleetdm-api-client/compare/v0.0.2...HEAD
+[Unreleased]: https://github.com/terjekv/fleetdm-api-client/compare/v0.0.3...HEAD
+[0.0.3]: https://github.com/terjekv/fleetdm-api-client/compare/v0.0.2...v0.0.3
 [0.0.2]: https://github.com/terjekv/fleetdm-api-client/compare/v0.0.1...v0.0.2
 [0.0.1]: https://github.com/terjekv/fleetdm-api-client/releases/tag/v0.0.1
