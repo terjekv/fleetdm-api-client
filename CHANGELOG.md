@@ -16,6 +16,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated the CI checks to CodeQL v4.39.5, cargo-deny-action v2.1.5, and
   cargo-audit 0.23.0.
 
+### Compatibility
+
+- All 116 live tests passed on each of Fleet Community 4.94.1, 4.95.0, and 4.96.0.
+  The smoke suite also passed on the Fleet 4.87.0 baseline.
+
 ## [0.0.2] - 2026-10-30
 
 ### Added
